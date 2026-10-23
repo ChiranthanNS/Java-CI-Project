@@ -1,5 +1,9 @@
+
 public class Calculator {
-    public int add(int a, int b) { return a + b; }
+    public int add(int a, int b) {
+        return a + b;
+    }
+
     public static void main(String[] args) {
         System.out.println(new Calculator().add(10, 20));
     }
