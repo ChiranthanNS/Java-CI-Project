@@ -1,0 +1,5 @@
+target/
+Java-CI-Project/
+.idea/
+.vscode/
+*.class
