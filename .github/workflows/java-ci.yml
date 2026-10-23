@@ -1,5 +1,5 @@
 
-name: Java CI Pipeline
+name: Java CI/CD Pipeline
 
 on:
   push:
@@ -12,8 +12,8 @@ permissions:
   contents: read
 
 jobs:
-  build-and-test:
-    name: Build and Test Java
+  build-test-and-push:
+    name: Build, Test and Push Docker Image
     runs-on: ubuntu-latest
 
     steps:
@@ -27,5 +27,26 @@ jobs:
           java-version: '25'
           cache: maven
 
-      - name: Build and run tests
+      - name: Build and test Java application
         run: mvn --batch-mode clean verify
+
+      - name: Set up Docker Buildx
+        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            chiranthanns/java-ci-project:latest
+            chiranthanns/java-ci-project:sha-${{ github.sha }}
